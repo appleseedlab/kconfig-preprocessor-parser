@@ -1,0 +1,48 @@
+[project]
+name = "kconfig-preprocessor-parser"
+version = "0.1.0"
+description = "Extract C preprocessor conditionals and resolve each branch to its effective CONFIG_* condition"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "s4nsec", email = "s4nsec@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "tree-sitter>=0.23",
+    "tree-sitter-c>=0.23",
+]
+keywords = ["c", "preprocessor", "tree-sitter", "kconfig", "linux-kernel", "ifdef"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: C",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Software Development :: Pre-processors",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/appleseedlab/kconfig-preprocessor-parser"
+Repository = "https://github.com/appleseedlab/kconfig-preprocessor-parser"
+Issues = "https://github.com/appleseedlab/kconfig-preprocessor-parser/issues"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.uv.build-backend]
+source-include = ["tests/**"]
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13"]
+build-backend = "uv_build"
