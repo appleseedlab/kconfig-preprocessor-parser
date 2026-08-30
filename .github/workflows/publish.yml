@@ -53,8 +53,15 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
 
+      # --publish-url rather than --index: this job holds no checkout, so there
+      # is no pyproject.toml for a named index to resolve against.
+      # --trusted-publishing always fails loudly if no OIDC token is available,
+      # instead of silently attempting an unauthenticated upload.
       - name: Publish
-        run: uv publish --index testpypi
+        run: |
+          uv publish \
+            --publish-url https://test.pypi.org/legacy/ \
+            --trusted-publishing always
 
   pypi:
     name: publish to PyPI
@@ -73,7 +80,7 @@ jobs:
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
 
       - name: Publish
-        run: uv publish
+        run: uv publish --trusted-publishing always
 
       - name: Verify the published package installs
         run: |
