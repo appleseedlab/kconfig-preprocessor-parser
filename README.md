@@ -2,8 +2,8 @@
 
 Extract C preprocessor conditional blocks (`#ifdef` / `#if` / `#elif` / `#else`)
 from source files using [tree-sitter](https://tree-sitter.github.io/), and
-resolve each branch to the **effective condition** that must hold for its lines
-to compile.
+resolve each branch to the effective condition that must hold for its lines to
+compile.
 
 Built for Linux kernel configuration analysis, where knowing *which* `CONFIG_*`
 symbols guard a given line matters. Scope is deliberately narrow: only
@@ -13,6 +13,17 @@ symbols guard a given line matters. Scope is deliberately narrow: only
 
 ```bash
 uv add kconfig-preprocessor-parser
+```
+
+```bash
+pip install kconfig-preprocessor-parser
+```
+
+To try it without adding it to a project, run a throwaway interpreter with the
+package available:
+
+```bash
+uv run --with kconfig-preprocessor-parser --no-project python
 ```
 
 Requires Python 3.10+.
@@ -57,7 +68,7 @@ Note `raw_expression` for the `#elif` and `#else` branches: the parser carries
 the negation of every earlier branch in the chain, so the expression is the
 complete guard for those lines, not just the local directive.
 
-Nested blocks compose the same way — a `#ifdef CONFIG_B` inside a
+Nested blocks compose the same way. A `#ifdef CONFIG_B` inside a
 `#ifdef CONFIG_A` yields `CONFIG_A and CONFIG_B`.
 
 Boolean operators are supported: `defined(A) && defined(B)` resolves to
@@ -89,37 +100,10 @@ Unresolved conditions are never silently dropped. They come back with
 **Conditions are read syntactically from one file.** Macros are not expanded and
 `#include` is not followed, so `#define MY_FLAG CONFIG_A` followed by
 `#ifdef MY_FLAG` reports `MY_FLAG`, not `CONFIG_A`. Symbols are reported as
-guards regardless of whether they are actually defined — resolve them against a
-real config with `parse_enabled_configs`.
+guards regardless of whether they are actually defined. Resolve them against
+a real config with `parse_enabled_configs`.
 
 **C only.** Backed by `tree-sitter-c`; C++ is not supported.
-
-## Coverage reports
-
-`get_all_lines_in_preproc` and
-`get_all_parseable_preproc_lines_in_covered_functions` read syzkaller coverage
-JSON. Reports record absolute paths from the machine the kernel was built on,
-which rarely match the tree you are analyzing, so paths are mapped onto
-`kernel_src` by longest matching suffix:
-
-```python
-get_all_parseable_preproc_lines_in_covered_functions(
-    coverage_file=Path("coverage.json"),
-    kernel_src=Path("/src/linux"),
-)
-```
-
-Pass `strip_prefix` to map them explicitly instead:
-
-```python
-get_all_parseable_preproc_lines_in_covered_functions(
-    coverage_file=Path("coverage.json"),
-    kernel_src=Path("/src/linux"),
-    strip_prefix="/build/ci/kernel-6.1",
-)
-```
-
-Files that cannot be mapped onto `kernel_src` are skipped, not fatal.
 
 ## License
 
